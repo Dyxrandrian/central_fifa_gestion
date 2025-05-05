@@ -53,6 +53,15 @@ CREATE TABLE playing_time (
                               duration_unit TEXT CHECK (duration_unit IN ('SECOND', 'MINUTE', 'HOUR'))
 );
 
+-- Table pour les clubs (référence vers le club du championnat)
+CREATE TABLE club (
+                      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                      name TEXT NOT NULL,
+                      acronym TEXT,
+                      year_creation INTEGER,
+                      stadium TEXT
+);
+
 -- Table pour les joueurs
 CREATE TABLE player (
                         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -63,11 +72,4 @@ CREATE TABLE player (
                         club_id UUID REFERENCES club(id)
 );
 
--- Table pour les clubs (référence vers le club du championnat)
-CREATE TABLE club (
-                      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                      name TEXT NOT NULL,
-                      acronym TEXT,
-                      year_creation INTEGER,
-                      stadium TEXT
-);
+
