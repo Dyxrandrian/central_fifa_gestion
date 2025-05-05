@@ -1,5 +1,6 @@
 package com.hei.fifa_gestion_central.Service;
 
+import com.hei.fifa_gestion_central.Entity.ChampionshipRanking;
 import com.hei.fifa_gestion_central.entity.ChampionshipRanking;
 import org.springframework.stereotype.Service;
 
