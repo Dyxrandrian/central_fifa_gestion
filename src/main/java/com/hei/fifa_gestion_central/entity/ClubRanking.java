@@ -1,5 +1,14 @@
-package com.hei.fifa_gestion_central.entity;
+package com.hei.fifa_gestion_central.Entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@EqualsAndHashCode
 public class ClubRanking {
     private Integer rank;
     private Club club;
