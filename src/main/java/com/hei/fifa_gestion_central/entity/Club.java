@@ -1,4 +1,4 @@
-package com.hei.fifa_gestion_central.Entity;
+package com.hei.fifa_gestion_central.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,5 +15,5 @@ public class Club {
     private String acronym;
     private Integer yearCreation;
     private String stadium;
-    private com.hei.fifa_gestion_central.entity.Coach coach;
+    private Coach coach;
 }

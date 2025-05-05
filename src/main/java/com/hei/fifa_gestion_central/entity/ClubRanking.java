@@ -1,4 +1,4 @@
-package com.hei.fifa_gestion_central.Entity;
+package com.hei.fifa_gestion_central.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.hei.fifa_gestion_central.Entity;
+package com.hei.fifa_gestion_central.entity;
 
 import com.hei.fifa_gestion_central.enums.Championship;
 import com.hei.fifa_gestion_central.enums.PlayerPosition;
@@ -21,5 +21,5 @@ public class PlayerRanking {
     private Integer age;
     private Championship championship;
     private Integer scoredGoals;
-    private com.hei.fifa_gestion_central.entity.PlayingTime playingTime;
+    private PlayingTime playingTime;
 }
