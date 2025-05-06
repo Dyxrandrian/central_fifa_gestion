@@ -1,7 +1,7 @@
 package com.hei.fifa_gestion_central.Controller;
 
+import com.hei.fifa_gestion_central.Entity.ClubRanking;
 import com.hei.fifa_gestion_central.Service.BestClubService;
-import com.hei.fifa_gestion_central.entity.ClubRanking;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,6 +1,6 @@
 package com.hei.fifa_gestion_central.Service;
 
-import com.hei.fifa_gestion_central.entity.ClubRanking;
+import com.hei.fifa_gestion_central.Entity.ClubRanking;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
