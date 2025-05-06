@@ -1,11 +1,6 @@
 package com.hei.fifa_gestion_central.Controller;
-
 import com.hei.fifa_gestion_central.Entity.PlayerRanking;
 import com.hei.fifa_gestion_central.Service.BestPlayerService;
-<<<<<<< HEAD
-=======
-import com.hei.fifa_gestion_central.Entity.PlayerRanking;
->>>>>>> 986e6b9a140816c28089970ebf7760df4069da92
 import com.hei.fifa_gestion_central.enums.DurationUnit;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

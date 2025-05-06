@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @Data
 public class Coach {
+    private String id;
     private String name;
     private String nationality;
 }

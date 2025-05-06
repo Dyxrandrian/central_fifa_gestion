@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode
 public class PlayingTime {
+    private String id;
     private double value;
     private DurationUnit durationUnit;
 }
