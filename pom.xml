@@ -60,10 +60,6 @@
 
     <build>
         <plugins>
-<<<<<<< HEAD
-=======
-
->>>>>>> 986e6b9a140816c28089970ebf7760df4069da92
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
