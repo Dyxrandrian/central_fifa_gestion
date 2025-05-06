@@ -1,7 +1,7 @@
 package com.hei.fifa_gestion_central.DAO;
 
-import com.hei.fifa_gestion_central.Entity.PlayerRanking;
 import com.hei.fifa_gestion_central.database.Datasource;
+import com.hei.fifa_gestion_central.Entity.PlayerRanking;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;

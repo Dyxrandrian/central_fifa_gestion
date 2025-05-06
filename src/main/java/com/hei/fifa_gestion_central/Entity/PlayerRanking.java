@@ -22,4 +22,5 @@ public class PlayerRanking {
     private Championship championship;
     private Integer scoredGoals;
     private PlayingTime playingTime;
+
 }

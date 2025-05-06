@@ -59,7 +59,8 @@ CREATE TABLE club (
                       name TEXT NOT NULL,
                       acronym TEXT,
                       year_creation INTEGER,
-                      stadium TEXT
+                      stadium TEXT,
+                    coach_id UUID UNIQUE REFERENCES coach(id)
 );
 
 -- Table pour les joueurs
@@ -72,4 +73,9 @@ CREATE TABLE player (
                         club_id UUID REFERENCES club(id)
 );
 
+CREATE TABLE coach (
+                       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                       name TEXT,
+                       nationality TEXT
+);
 
