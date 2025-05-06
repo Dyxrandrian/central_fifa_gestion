@@ -12,15 +12,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/championshipRankings")
 public class ChampionshipRankingController {
-    private final ChampionshipRankingService championshipRankingService;
+    private final ChampionshipRankingService service;
 
-    public ChampionshipRankingController(ChampionshipRankingService championshipRankingService) {
-        this.championshipRankingService = championshipRankingService;
+    public ChampionshipRankingController(ChampionshipRankingService service) {
+        this.service = service;
     }
 
     @GetMapping
     public ResponseEntity<List<ChampionshipRanking>> getChampionshipRankings() {
-        List<ChampionshipRanking> rankings = championshipRankingService.getChampionshipRankings();
+        List<ChampionshipRanking> rankings = service.getChampionshipRankings();
         return ResponseEntity.ok(rankings);
     }
 }
