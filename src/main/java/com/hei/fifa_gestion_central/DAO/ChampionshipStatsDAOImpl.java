@@ -1,6 +1,5 @@
 package com.hei.fifa_gestion_central.DAO;
 
-import com.hei.fifa_gestion_central.Mapper.ChampionshipMapper;
 import com.hei.fifa_gestion_central.database.Datasource;
 import com.hei.fifa_gestion_central.enums.Championship;
 import org.springframework.stereotype.Repository;
@@ -22,10 +21,11 @@ public class ChampionshipStatsDAOImpl implements ChampionshipStatsDAO {
     @Override
     public Map<Championship, List<Integer>> getDifferenceGoalsByChampionship() {
         String query = """
-            SELECT championship_id, difference_goals
-            FROM club_ranking
-            WHERE difference_goals IS NOT NULL
-        """;
+        SELECT ch.name AS championship_name, cr.difference_goals
+        FROM club_ranking cr
+        JOIN championship ch ON cr.championship_id = ch.id
+        WHERE cr.difference_goals IS NOT NULL
+    """;
 
         Map<Championship, List<Integer>> result = new EnumMap<>(Championship.class);
 
@@ -34,11 +34,10 @@ public class ChampionshipStatsDAOImpl implements ChampionshipStatsDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                UUID championshipId = rs.getObject("championship_id", UUID.class);
-                Integer diffGoals = rs.getInt("difference_goals");
+                String championshipName = rs.getString("championship_name");
+                Championship championship = Championship.valueOf(championshipName); // direct mapping
 
-                // Suppose que tu as une méthode utilitaire pour mapper UUID → enum Championship
-                Championship championship = ChampionshipMapper.mapToEnum(championshipId);
+                int diffGoals = rs.getInt("difference_goals");
                 result.computeIfAbsent(championship, k -> new ArrayList<>()).add(diffGoals);
             }
 
