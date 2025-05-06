@@ -26,12 +26,14 @@ public class ClubRankingDAOImpl {
     public List<ClubRanking> findAll() throws SQLException {
         List<ClubRanking> result = new ArrayList<>();
         String sql = """
-            SELECT cr.*, c.id as club_id, c.name as club_name, c.acronym, c.year_creation, c.stadium,
-                   co.name as coach_name, co.nationality as coach_nationality
-            FROM club_ranking cr
-            JOIN club c ON cr.club_id = c.id
-            LEFT JOIN coach co ON co.club_id = c.id
-        """;
+    SELECT cr.*, 
+           c.id AS club_id, c.name AS club_name, c.acronym, c.year_creation, c.stadium,
+           co.name AS coach_name, co.nationality AS coach_nationality
+    FROM club_ranking cr
+    JOIN club c ON cr.club_id = c.id
+    LEFT JOIN coach co ON c.coach_id = co.id
+""";
+
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql);

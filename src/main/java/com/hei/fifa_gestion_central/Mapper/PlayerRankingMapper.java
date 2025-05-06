@@ -14,6 +14,7 @@ public class PlayerRankingMapper {
         PlayerRanking player = new PlayerRanking();
         player.setId(rs.getString("player_id"));
         player.setName(rs.getString("name"));
+        player.setNumber(rs.getInt("number"));
         player.setPosition(PlayerPosition.valueOf(rs.getString("position")));
         player.setNationality(rs.getString("nationality"));
         player.setAge(rs.getInt("age"));
@@ -22,6 +23,7 @@ public class PlayerRankingMapper {
         player.setChampionship(Championship.valueOf(rs.getString("championship")));
 
         PlayingTime time = new PlayingTime();
+        time.setId(rs.getString("playing_time_id"));
         time.setValue(rs.getDouble("playing_time_value"));
         time.setDurationUnit(DurationUnit.valueOf(rs.getString("duration_unit")));
         player.setPlayingTime(time);

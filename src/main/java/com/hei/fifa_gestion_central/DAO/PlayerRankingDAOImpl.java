@@ -29,11 +29,13 @@ public class PlayerRankingDAOImpl {
             SELECT pr.rank,
                    p.id AS player_id,
                    p.name,
+                   p.number,
                    p.position,
                    p.nationality,
                    p.age,
                    c.name AS championship,
                    pr.scored_goals,
+                   pt.id AS playing_time_id,
                    pt.value AS playing_time_value,
                    pt.duration_unit
             FROM player_ranking pr

@@ -39,6 +39,7 @@ CREATE TABLE club (
 CREATE TABLE player (
                         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                         name TEXT NOT NULL,
+                        number INTEGER NOT NULL,
                         position player_position NOT NULL,
                         nationality TEXT NOT NULL,
                         age INTEGER,

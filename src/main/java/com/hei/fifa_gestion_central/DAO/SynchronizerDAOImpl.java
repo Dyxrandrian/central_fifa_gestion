@@ -3,7 +3,9 @@ package com.hei.fifa_gestion_central.DAO;
 import com.hei.fifa_gestion_central.DTO.ClubDTO;
 import com.hei.fifa_gestion_central.DTO.CoachDTO;
 import com.hei.fifa_gestion_central.DTO.PlayerDTO;
+import com.hei.fifa_gestion_central.Entity.Club;
 import com.hei.fifa_gestion_central.Entity.ClubRanking;
+import com.hei.fifa_gestion_central.Entity.Coach;
 import com.hei.fifa_gestion_central.database.Datasource;
 import com.hei.fifa_gestion_central.Entity.PlayerRanking;
 import com.hei.fifa_gestion_central.enums.Championship;
@@ -30,7 +32,6 @@ public class SynchronizerDAOImpl implements SynchronizeDAO {
                 "VALUES (?, ?, ?, ?, ?, ?) " +
                 "ON CONFLICT (id) DO NOTHING";
 
-
         try (Connection conn = datasource.getConnection();
              PreparedStatement coachStmt = conn.prepareStatement(insertCoachSql);
              PreparedStatement clubStmt = conn.prepareStatement(insertClubSql)) {
@@ -39,19 +40,19 @@ public class SynchronizerDAOImpl implements SynchronizeDAO {
                 // Insertion du coach
                 CoachDTO coach = club.getCoach();
                 if (coach != null) {
-                    coachStmt.setObject(1, coach.getId());
+                    coachStmt.setObject(1, coach.getId());  // Conversion en UUID si nécessaire
                     coachStmt.setString(2, coach.getName());
                     coachStmt.setString(3, coach.getNationality());
                     coachStmt.addBatch();
                 }
 
                 // Insertion du club
-                clubStmt.setObject(1, club.getId());
+                clubStmt.setObject(1, club.getId()); // Assurez-vous que club.getId() est aussi de type UUID
                 clubStmt.setString(2, club.getName());
                 clubStmt.setString(3, club.getAcronym());
                 clubStmt.setInt(4, club.getYearCreation());
                 clubStmt.setString(5, club.getStadium());
-                clubStmt.setObject(6, coach != null ? coach.getId() : null);
+                clubStmt.setObject(6, coach != null ? coach.getId() : null); // Conversion du coach_id si nécessaire
                 clubStmt.addBatch();
             }
 
@@ -65,38 +66,9 @@ public class SynchronizerDAOImpl implements SynchronizeDAO {
     }
 
 
-    @Override
-    public void savePlayerRankings(List<PlayerRanking> playerRankings) {
-        String sql = "INSERT INTO player_ranking (id, name, number, position, nationality, age, championship, scored_goals, playing_time_value, playing_time_unit, rank) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = datasource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            for (PlayerRanking player : playerRankings) {
-                stmt.setString(1, player.getId());
-                stmt.setString(2, player.getName());
-                stmt.setInt(3, player.getNumber());
-                stmt.setString(4, player.getPosition().name());
-                stmt.setString(5, player.getNationality());
-                stmt.setInt(6, player.getAge());
-                stmt.setString(7, player.getChampionship().name());
-                stmt.setInt(8, player.getScoredGoals());
-                stmt.setDouble(9, player.getPlayingTime().getValue());
-                stmt.setString(10, player.getPlayingTime().getDurationUnit().name());
-                stmt.setInt(11, player.getRank());
-                stmt.addBatch(); // optimise l'insert
-            }
-
-            stmt.executeBatch();
-        } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors de la sauvegarde des rankings joueurs : " + e.getMessage(), e);
-        }
-    }
-
     public void savePlayers(List<PlayerDTO> players) {
-        String sql = "INSERT INTO player (id, name, position, nationality, age, club_id) " +
-                "VALUES (?, ?, ?, ?, ?, ?) " +
+        String sql = "INSERT INTO player (id, name, number, position, nationality, age, club_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?) " +
                 "ON CONFLICT (id) DO NOTHING";
 
         try (Connection conn = datasource.getConnection();
@@ -105,10 +77,11 @@ public class SynchronizerDAOImpl implements SynchronizeDAO {
             for (PlayerDTO player : players) {
                 stmt.setObject(1, player.getId()); // UUID
                 stmt.setString(2, player.getName());
-                stmt.setObject(3, player.getPosition().name(), Types.OTHER); // On utilise Types.OTHER pour l'ENUM
-                stmt.setString(4, player.getNationality());
-                stmt.setInt(5, player.getAge());
-                stmt.setObject(6, player.getClub() != null ? player.getClub().getId() : null); // Peut être null
+                stmt.setInt(3, player.getNumber());
+                stmt.setObject(4, player.getPosition().name(), Types.OTHER); // On utilise Types.OTHER pour l'ENUM
+                stmt.setString(5, player.getNationality());
+                stmt.setInt(6, player.getAge());
+                stmt.setObject(7, player.getClub() != null ? player.getClub().getId() : null); // Peut être null
                 stmt.addBatch();
             }
 
@@ -127,7 +100,7 @@ public class SynchronizerDAOImpl implements SynchronizeDAO {
             scored_goals, conceded_goals, difference_goals,
             clean_sheet_number, season_year
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?::uuid, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (club_id, championship_id, season_year)
         DO UPDATE SET
             rank = EXCLUDED.rank,
@@ -151,7 +124,7 @@ public class SynchronizerDAOImpl implements SynchronizeDAO {
                     stmt.clearParameters(); // Sécurité si le JDBC l'exige
                     stmt.setObject(1, UUID.randomUUID()); // id
                     stmt.setObject(2, championshipId);     // championship_id
-                    stmt.setObject(3, UUID.fromString(cr.getClub().getId())); // club_id
+                    stmt.setObject(3, cr.getClub().getId()); // club_id
 
                     if (cr.getRank() != null) {
                         stmt.setInt(4, cr.getRank());
@@ -182,7 +155,13 @@ public class SynchronizerDAOImpl implements SynchronizeDAO {
 
     @Override
     public void savePlayerRankings(List<PlayerRanking> playerRankings, Championship championship, int seasonYear) {
-        String insertSql = """
+        String insertPlayingTimeSql = """
+        INSERT INTO playing_time (value, duration_unit)
+        VALUES (?, ?::duration_unit)
+        RETURNING id
+    """;
+
+        String insertPlayerRankingSql = """
         INSERT INTO player_ranking (
             id, player_id, rank, championship_id,
             scored_goals, playing_time_id, season_year
@@ -201,52 +180,63 @@ public class SynchronizerDAOImpl implements SynchronizeDAO {
 
         try (Connection conn = datasource.getConnection()) {
             conn.setAutoCommit(false);
+
+            // Récupérer l'ID du championnat à partir de l'énumération
             UUID championshipId = getChampionshipIdByEnum(conn, championship);
             if (championshipId == null) {
                 throw new RuntimeException("Aucun championnat trouvé avec le nom : " + championship);
             }
 
             try (
-                    PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+                    PreparedStatement insertPlayingTimeStmt = conn.prepareStatement(insertPlayingTimeSql);
+                    PreparedStatement insertPlayerRankingStmt = conn.prepareStatement(insertPlayerRankingSql);
                     PreparedStatement selectPlayerStmt = conn.prepareStatement(selectPlayerIdSql)
             ) {
                 for (PlayerRanking pr : playerRankings) {
+                    // Insérer dans la table playing_time et récupérer l'ID généré
+                    insertPlayingTimeStmt.setDouble(1, pr.getPlayingTime().getValue());
+                    insertPlayingTimeStmt.setString(2, pr.getPlayingTime().getDurationUnit().name());
+                    ResultSet rsPlayingTime = insertPlayingTimeStmt.executeQuery();
+
+                    if (!rsPlayingTime.next()) {
+                        System.err.println("Erreur lors de l'insertion du temps de jeu pour le joueur : " + pr.getName());
+                        continue; // Passer au joueur suivant en cas d'erreur d'insertion
+                    }
+
+                    UUID playingTimeId = UUID.fromString(rsPlayingTime.getString("id"));
+
                     // Recherche du player_id par nom
                     selectPlayerStmt.setString(1, pr.getName());
-                    ResultSet rs = selectPlayerStmt.executeQuery();
+                    ResultSet rsPlayer = selectPlayerStmt.executeQuery();
 
-                    if (!rs.next()) {
+                    if (!rsPlayer.next()) {
                         System.err.println("Joueur introuvable : " + pr.getName());
-                        continue; // Skip ce joueur s'il n'existe pas
+                        continue; // Passer au joueur suivant s'il n'est pas trouvé
                     }
 
-                    UUID playerId = UUID.fromString(rs.getString("id"));
+                    UUID playerId = UUID.fromString(rsPlayer.getString("id"));
 
-                    insertStmt.clearParameters();
-                    insertStmt.setObject(1, UUID.randomUUID()); // id
-                    insertStmt.setObject(2, playerId);           // player_id
+                    // Insérer dans player_ranking en utilisant l'ID de playing_time
+                    insertPlayerRankingStmt.clearParameters();
+                    insertPlayerRankingStmt.setObject(1, UUID.randomUUID()); // Générer un ID pour player_ranking
+                    insertPlayerRankingStmt.setObject(2, playerId); // player_id
 
                     if (pr.getRank() != null) {
-                        insertStmt.setInt(3, pr.getRank());
+                        insertPlayerRankingStmt.setInt(3, pr.getRank());
                     } else {
-                        insertStmt.setNull(3, Types.INTEGER);
+                        insertPlayerRankingStmt.setNull(3, Types.INTEGER);
                     }
 
-                    insertStmt.setObject(4, championshipId);     // championship_id
-                    insertStmt.setInt(5, pr.getScoredGoals());
+                    insertPlayerRankingStmt.setObject(4, championshipId); // championship_id
+                    insertPlayerRankingStmt.setInt(5, pr.getScoredGoals());
+                    insertPlayerRankingStmt.setObject(6, playingTimeId); // playing_time_id
+                    insertPlayerRankingStmt.setInt(7, seasonYear);
 
-                    if (pr.getPlayingTime().getId() != null) {
-                        insertStmt.setObject(6, UUID.fromString(pr.getPlayingTime().getId()));
-                    } else {
-                        insertStmt.setNull(6, Types.OTHER);
-                    }
-
-                    insertStmt.setInt(7, seasonYear);
-
-                    insertStmt.addBatch();
+                    insertPlayerRankingStmt.addBatch();
                 }
 
-                insertStmt.executeBatch();
+                // Exécuter le batch d'insertion
+                insertPlayerRankingStmt.executeBatch();
                 conn.commit();
             } catch (SQLException e) {
                 conn.rollback();
