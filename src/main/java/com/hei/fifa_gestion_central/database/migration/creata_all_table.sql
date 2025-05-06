@@ -81,9 +81,38 @@ CREATE TABLE match_score (
 CREATE TABLE playing_time (
                               id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                               value DOUBLE PRECISION,
+<<<<<<< HEAD
                               duration_unit duration_unit
+=======
+                              duration_unit TEXT CHECK (duration_unit IN ('SECOND', 'MINUTE', 'HOUR'))
 );
 
+-- Table pour les clubs (référence vers le club du championnat)
+CREATE TABLE club (
+                      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                      name TEXT NOT NULL,
+                      acronym TEXT,
+                      year_creation INTEGER,
+                      stadium TEXT,
+                    coach_id UUID UNIQUE REFERENCES coach(id)
+);
+
+-- Table pour les joueurs
+CREATE TABLE player (
+                        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                        name TEXT NOT NULL,
+                        position TEXT CHECK (position IN ('STRIKER', 'MIDFIELDER', 'DEFENSE', 'GOAL_KEEPER')),
+                        nationality TEXT NOT NULL,
+                        age INTEGER,
+                        club_id UUID REFERENCES club(id)
+>>>>>>> 986e6b9a140816c28089970ebf7760df4069da92
+);
+
+CREATE TABLE coach (
+                       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                       name TEXT,
+                       nationality TEXT
+);
 
 
 

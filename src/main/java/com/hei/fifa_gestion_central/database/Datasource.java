@@ -1,6 +1,5 @@
 package com.hei.fifa_gestion_central.database;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.sql.Connection;
@@ -8,7 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 @Configuration
-public class DatasourceCentral {
+public class Datasource {
     private final String host = System.getenv("DATABASE_HOST");
     private final String user = System.getenv("DATABASE_USER");
     private final String password = System.getenv("DATABASE_PASSWORD");
@@ -16,7 +15,7 @@ public class DatasourceCentral {
     private final String database = System.getenv("DATABASE_NAME");
     private final String jdbcUrl;
 
-    public DatasourceCentral() {
+    public Datasource() {
         jdbcUrl = "jdbc:postgresql://" + host + ":" + defaultPort + "/" + database;
     }
 
