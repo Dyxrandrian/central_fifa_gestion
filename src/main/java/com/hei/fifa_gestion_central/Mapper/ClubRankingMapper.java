@@ -10,6 +10,7 @@ import java.sql.SQLException;
 public class ClubRankingMapper {
     public ClubRanking map(ResultSet rs) throws SQLException {
         Coach coach = new Coach(
+                rs.getString("id"),
                 rs.getString("coach_name"),
                 rs.getString("coach_nationality")
         );
