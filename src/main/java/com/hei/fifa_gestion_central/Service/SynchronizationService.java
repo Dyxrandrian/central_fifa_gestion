@@ -92,7 +92,7 @@
         private String getChampionshipByPort(String port) {
             switch (port) {
                 case "8084":
-                    return "SERIEA";
+                    return "SERIA";
                 case "8085":
                     return "LIGUE_1";
                 default:
