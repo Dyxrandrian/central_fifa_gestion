@@ -22,7 +22,7 @@
         private final SynchronizeDAO synchronizeDAO;
 
         private static final List<String> CHAMPIONSHIP_PORTS = List.of(
-                "8080", "8082", "8083", "8084", "8085"
+                "8084", "8085"
         );
 
         public SynchronizationService(SynchronizeDAO synchronizeDAO) {
@@ -91,12 +91,6 @@
 
         private String getChampionshipByPort(String port) {
             switch (port) {
-                case "8080":
-                    return "PREMIER_LEAGUE";
-                case "8082":
-                    return "LA_LIGA";
-                case "8083":
-                    return "BUNDESLIGA";
                 case "8084":
                     return "SERIA";
                 case "8085":

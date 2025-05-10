@@ -78,11 +78,3 @@ CREATE TABLE player_ranking (
                                 playing_time_id UUID REFERENCES playing_time(id),
                                 season_year INTEGER
 );
-
--- Table des scores de match
-CREATE TABLE match_score (
-                             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                             match_id UUID,
-                             home_score INTEGER,
-                             away_score INTEGER
-);

@@ -69,7 +69,13 @@ public class SynchronizerDAOImpl implements SynchronizeDAO {
     public void savePlayers(List<PlayerDTO> players) {
         String sql = "INSERT INTO player (id, name, number, position, nationality, age, club_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?) " +
-                "ON CONFLICT (id) DO NOTHING";
+                "ON CONFLICT (id) DO UPDATE SET " +
+                "name = EXCLUDED.name, " +
+                "number = EXCLUDED.number, " +
+                "position = EXCLUDED.position, " +
+                "nationality = EXCLUDED.nationality, " +
+                "age = EXCLUDED.age, " +
+                "club_id = EXCLUDED.club_id";
 
         try (Connection conn = datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -78,10 +84,10 @@ public class SynchronizerDAOImpl implements SynchronizeDAO {
                 stmt.setObject(1, player.getId()); // UUID
                 stmt.setString(2, player.getName());
                 stmt.setInt(3, player.getNumber());
-                stmt.setObject(4, player.getPosition().name(), Types.OTHER); // On utilise Types.OTHER pour l'ENUM
+                stmt.setObject(4, player.getPosition().name(), Types.OTHER); // ENUM
                 stmt.setString(5, player.getNationality());
                 stmt.setInt(6, player.getAge());
-                stmt.setObject(7, player.getClub() != null ? player.getClub().getId() : null); // Peut être null
+                stmt.setObject(7, player.getClub() != null ? player.getClub().getId() : null);
                 stmt.addBatch();
             }
 
@@ -90,6 +96,7 @@ public class SynchronizerDAOImpl implements SynchronizeDAO {
             throw new RuntimeException("Erreur lors de la sauvegarde des joueurs : " + e.getMessage(), e);
         }
     }
+
 
 
     @Override
